@@ -1,3 +1,1 @@
-To run the program you have to first go to the cmd and type this command:
-
-pip install requests
+requests
