@@ -1,0 +1,53 @@
+name: Docker Build and Publish
+
+on:
+  push:
+    branches:
+      - main # Le workflow s'exécute uniquement lors d'un push sur la branche 'main'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }} # Utilise le nom du dépôt comme nom d'image
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Nécessaire pour publier sur le Container Registry
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup QEMU (Pour les builds multi-plateformes)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }} # L'utilisateur qui a déclenché l'action
+          password: ${{ secrets.GITHUB_TOKEN }} # Le token automatique de GitHub pour l'authentification
+
+      - name: Extract metadata (tags and labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is-default-branch}}
+            type=sha,format=short
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: . # Chemin vers le contexte de construction (où se trouve le Dockerfile)
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha # Utiliser le cache des actions GitHub
+          cache-to: type=gha,mode=max # Mettre à jour le cache
