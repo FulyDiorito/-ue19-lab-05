@@ -45,7 +45,7 @@ jobs:
         with:
           images: |
             fulydiorito/monapp
-            ghcr.io/${{ tolower(github.repository) }}
+            ghcr.io/${{ github.repository }}
 
       - name: Build and push Docker images
         id: push
