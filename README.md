@@ -1,6 +1,6 @@
 # -ue19-lab-05
 
-Ce projet à pour but d'afficher une blague lorsque le code est exécuté.
+Ce projet a pour but d'afficher une blague lorsque le code est exécuté.
 
 ## Installation
 
