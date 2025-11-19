@@ -60,6 +60,6 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v3
         with:
-          subject-name: ghcr.io/${{ github.repository }}
+          subject-name: ghcr.io/FulyDiorito/ue19-lab-05
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
